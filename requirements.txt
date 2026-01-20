@@ -1,0 +1,53 @@
+# FastAPI & Server
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.12
+
+# Database
+sqlalchemy==2.0.36
+asyncpg==0.30.0
+psycopg2-binary==2.9.10
+alembic==1.14.0
+
+# LangChain & LangGraph
+langgraph==0.2.60
+langchain==0.3.14
+langchain-openai==0.2.14
+langchain-community==0.3.14
+
+# Vanna AI
+vanna==0.7.5
+chromadb==0.4.24
+
+# OpenAI
+openai==1.59.5
+
+# Elasticsearch
+elasticsearch==8.11.0
+
+# Redis
+redis==5.2.1
+
+# Data Processing
+pandas==2.2.3
+numpy==1.26.4
+
+# PDF Processing
+PyPDF2==3.0.1
+pypdf==5.1.0
+
+# Utilities
+pydantic==2.10.4
+pydantic-settings==2.7.0
+python-dotenv==1.0.1
+
+# UI
+streamlit==1.41.1
+
+# Testing
+pytest==8.3.4
+pytest-asyncio==0.24.0
+httpx==0.28.1
+
+# Logging
+loguru==0.7.3

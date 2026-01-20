@@ -37,6 +37,16 @@ Below are snapshots of the application (UI, API, and architecture):
 ![Screenshot 8](screenshots/8.png)
 ![Screenshot 9](screenshots/9.png)
 
+## Demo Video
+
+Watch the demo below or download the file directly if the embedded player is not supported by your viewer:
+
+[Download Demo Video](screenshots/demo.mp4)
+
+<video src="screenshots/demo.mp4" controls poster="screenshots/1.png" width="800">
+  Your browser does not support the video tag. You can download the video from screenshots/demo.mp4.
+</video>
+
 ### Key Features
 
 - LLM-based intent classification (not regex/keyword matching)

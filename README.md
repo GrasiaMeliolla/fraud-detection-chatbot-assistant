@@ -23,6 +23,20 @@ Fina answers fraud-related questions by leveraging two data sources:
 
 The system uses LangGraph for orchestration, automatically routing queries to the appropriate data source based on LLM intent classification.
 
+## Screenshots
+
+Below are snapshots of the application (UI, API, and architecture):
+
+![Screenshot 1](screenshots/1.png)
+![Screenshot 2](screenshots/2.png)
+![Screenshot 3](screenshots/3.png)
+![Screenshot 4](screenshots/4.png)
+![Screenshot 5](screenshots/5.png)
+![Screenshot 6](screenshots/6.png)
+![Screenshot 7](screenshots/7.png)
+![Screenshot 8](screenshots/8.png)
+![Screenshot 9](screenshots/9.png)
+
 ### Key Features
 
 - LLM-based intent classification (not regex/keyword matching)
@@ -333,6 +347,7 @@ cp .env.example .env
 # 3. Add data files
 # Place in data/: fraudTrain.csv, fraudTest.csv
 # Place in data/documents/: PDF files
+# Dataset source (Kaggle): https://www.kaggle.com/datasets/kartik2112/fraud-detection/data?select=fraud%20dataset
 
 # 4. Start all services
 docker-compose up -d --build

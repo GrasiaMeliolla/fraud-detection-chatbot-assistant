@@ -129,6 +129,7 @@ class VannaService:
         """
         Generate and execute SQL for a natural language question.
         Handles intermediate_sql responses by running them and retrying with additional context.
+        Applies guardrails to prefer monthly aggregation for long-horizon or trend questions.
         Returns dict with sql, results, and error (if any).
         """
         try:
@@ -169,6 +170,31 @@ Please generate the final SQL query to answer the original question using this c
             # Clean up any remaining intermediate_sql prefix
             if sql and sql.strip().startswith("-- intermediate_sql"):
                 sql = sql.replace("-- intermediate_sql", "").strip()
+
+            # Guardrail: prefer MONTHLY aggregation for long-horizon/trend questions
+            try:
+                q_lower = question.lower()
+                monthly_signals = [
+                    "two-year", "two year", "over two years", "over the two-year",
+                    "trend", "monthly", "per month", "month-by-month", "daily or monthly"
+                ]
+                prefer_monthly = any(sig in q_lower for sig in monthly_signals)
+                uses_day = bool(sql and "date_trunc('day'" in sql.lower())
+
+                if prefer_monthly and uses_day:
+                    logger.info("Guardrail triggered: switching to monthly aggregation for long-horizon/trend question")
+                    enhanced_question = f"""{question}
+
+Clarification:
+- Aggregate by MONTH over the entire two-year period (use DATE_TRUNC('month'))
+- Return columns: month, total_transactions, fraud_count, fraud_rate_percent
+- ORDER BY month
+"""
+                    sql = self.generate_sql(enhanced_question)
+                    if sql and sql.strip().startswith("-- intermediate_sql"):
+                        sql = sql.replace("-- intermediate_sql", "").strip()
+            except Exception as guard_e:
+                logger.warning(f"Guardrail monthly aggregation failed: {guard_e}")
 
             results = self.run_sql(sql)
 
@@ -300,6 +326,14 @@ SAMPLE_QUERIES_TRAINING = [
     {
         "question": "What is the fraud rate for merchant Johnson LLC?",
         "sql": "SELECT merchant, COUNT(*) as total, SUM(is_fraud) as fraud_count, ROUND(100.0 * SUM(is_fraud) / COUNT(*), 2) as fraud_rate FROM fraud_transactions WHERE merchant ILIKE '%Johnson%' GROUP BY merchant"
+    },
+    {
+        "question": "How does the daily or monthly fraud rate fluctuate over the two-year period?",
+        "sql": "SELECT DATE_TRUNC('month', trans_date_trans_time) as month, COUNT(*) as total_transactions, SUM(is_fraud) as fraud_count, ROUND(100.0 * SUM(is_fraud) / COUNT(*), 2) as fraud_rate_percent FROM fraud_transactions GROUP BY month ORDER BY month"
+    },
+    {
+        "question": "Show daily fraud rate for the last 60 days",
+        "sql": "SELECT DATE_TRUNC('day', trans_date_trans_time) as day, COUNT(*) as total_transactions, SUM(is_fraud) as fraud_count, ROUND(100.0 * SUM(is_fraud) / COUNT(*), 2) as fraud_rate_percent FROM fraud_transactions WHERE trans_date_trans_time >= CURRENT_DATE - INTERVAL '60 days' GROUP BY day ORDER BY day"
     }
 ]
 
